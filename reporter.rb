@@ -19,7 +19,7 @@ class Event
   end
 end
 
-class Detector
+class Reconciler
   def unfinished_events(start_events, end_events)
     start_events.reject do |start_event|
       end_events.any? { |event| start_event.id == event.id }
@@ -53,5 +53,17 @@ module Storage
       @@start_events.clear 
       @@end_events.clear 
     end
+  end
+end
+
+class Reporter
+  def initialize(reconciler = Reconciler)
+    @reconciler = reconciler
+  end
+
+  def report_unfinished_events
+    start_events = Storage::DB.start_events
+    end_events= Storage::DB.end_events
+    @reconciler.unfinished_events start_events, end_events
   end
 end

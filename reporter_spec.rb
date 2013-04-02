@@ -37,8 +37,8 @@ describe Event do
   end
 end
 
-describe Detector do
-  let(:detector) { Detector.new }
+describe Reconciler do
+  let(:detector) { Reconciler.new }
 
   describe "no events at all" do
     it "returns an empty collection" do
@@ -84,5 +84,20 @@ describe Storage::DB do
     event = stub(id: 2)
     Storage::DB.save_end_event event
     Storage::DB.end_events.should == [event]
+  end
+end
+
+describe Reporter do
+  it "feeds Reconciler with start events and end events" do
+    start_events = [stub(id: 1), stub(id: 2)]
+    end_events = [stub(id: 1)]
+    Storage::DB.should_receive(:start_events) { start_events }
+    Storage::DB.should_receive(:end_events) { end_events }
+    reconciler = stub
+    reconciler.should_receive(:unfinished_events).
+      with(start_events, end_events)
+
+    reporter = Reporter.new(reconciler)
+    reporter.report_unfinished_events
   end
 end
