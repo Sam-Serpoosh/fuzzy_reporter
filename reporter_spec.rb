@@ -85,6 +85,12 @@ describe Storage::DB do
     Storage::DB.save_end_event event
     Storage::DB.end_events.should == [event]
   end
+
+  it "fetches event by id" do
+    event = stub(id: 1) 
+    Storage::DB.save_start_event event
+    Storage::DB.find_event(1).should == event
+  end
 end
 
 describe Reporter do

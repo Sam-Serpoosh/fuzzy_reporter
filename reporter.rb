@@ -17,6 +17,10 @@ class Event
   def done?
     @done
   end
+
+  def to_s
+    "#{@id}-#{done?}"
+  end
 end
 
 class Reconciler
@@ -29,6 +33,10 @@ end
 
 module Storage
   class DB
+    def self.find_event id
+      @@start_events.find { |event| event.id == id }
+    end
+
     def self.start_events
       @@start_events
     end
@@ -57,7 +65,7 @@ module Storage
 end
 
 class Reporter
-  def initialize(reconciler = Reconciler)
+  def initialize(reconciler = Reconciler.new)
     @reconciler = reconciler
   end
 
